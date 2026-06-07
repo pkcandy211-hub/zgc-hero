@@ -1,0 +1,6 @@
+{
+  "name": "三國志·戰略版 英雄世命賽季攻略庫",
+  "description": "提供《三國志·戰略版》「英雄世命」賽季都尉武將一覽、屬性天賦、天梯陣容搭配、文臣提案及沙盤氣候說明的精準互動攻略資料網頁。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
