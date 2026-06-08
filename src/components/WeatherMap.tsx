@@ -148,7 +148,7 @@ export default function WeatherMap() {
             <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-850 space-y-3 text-xs leading-relaxed">
               <div className="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-800">
                 <span className="font-bold text-amber-400">自帶戰法：【{NEW_HEROES.general.skill}】</span>
-                <span className="text-slate-500 font-mono">機率 70% 主動</span>
+                <span className="text-[#ffa100] font-mono">發動率 70%</span>
               </div>
               <p className="text-slate-300 pl-1 leading-relaxed">
                 {NEW_HEROES.general.skillDesc}
@@ -156,7 +156,7 @@ export default function WeatherMap() {
 
               <div className="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-800 mt-2">
                 <span className="font-bold text-sky-400">傳承戰法：【{NEW_HEROES.general.legacySkill}】</span>
-                <span className="text-slate-500 font-mono">機率 35% 突擊</span>
+                <span className="text-[#ffa100] font-mono">發動率 35%</span>
               </div>
               <p className="text-slate-300 pl-1 leading-relaxed">
                 {NEW_HEROES.general.legacyDesc}
@@ -177,7 +177,7 @@ export default function WeatherMap() {
                 新增事件戰法：【{NEW_HEROES.eventTactic.name}】
               </h3>
               <p className="text-xs text-slate-400">
-                完美解決法坦、防反流最畏懼的「負面技窮狀態」，具有極佳的自我凈化及屬性爆發加值。
+                完美解決法坦最畏懼的「負面控制狀態」，具有極佳的自我降低傷害及治療友軍。
               </p>
             </div>
 
@@ -189,7 +189,7 @@ export default function WeatherMap() {
                 </p>
                 
                 <p className="leading-relaxed bg-slate-900 p-3 rounded border border-slate-850">
-                  <span className="text-purple-400 font-semibold block mb-1">戰法具体詳解 (100% 被動穩定發動)：</span>
+                  <span className="text-purple-400 font-semibold block mb-1">戰法具體詳解 (被動)：</span>
                   {NEW_HEROES.eventTactic.desc}
                 </p>
               </div>

@@ -20,7 +20,11 @@ export default function CommandantCardList() {
     const matchesSearch = c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.skillName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.analysis.toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStar = selectedStar ? c.starRating === selectedStar : true;
+    const matchesStar = selectedStar
+      ? selectedStar === 4
+        ? (c.starRating >= 4 && c.starRating < 5)
+        : c.starRating === selectedStar
+      : true;
     const matchesType = selectedType ? c.skillType === selectedType : true;
     return matchesSearch && matchesStar && matchesType;
   });
@@ -110,8 +114,8 @@ export default function CommandantCardList() {
                     <div className="flex items-center gap-2">
                       <span className="font-medium text-slate-100 text-base">{item.name}</span>
                       <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-semibold ${
-                        item.starRating === 5 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                        item.starRating === 4 ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                        item.starRating >= 4.5 ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                        item.starRating >= 4 ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
                         'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
                       }`}>
                         {item.starRating}星/★
@@ -160,16 +164,26 @@ export default function CommandantCardList() {
                   {/* Top Header Card */}
                   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-5">
                     <div className="flex items-center gap-4">
-                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${selected.avatarColor} flex items-center justify-center text-2xl font-bold text-white shadow-lg shadow-black/35`}>
+                      <div className={`w-14 h-14 rounded-2xl bg-gradient-to-tr ${selected.avatarColor} flex-shrink-0 flex items-center justify-center font-bold text-white shadow-lg shadow-black/35 whitespace-nowrap px-1 ${
+                        selected.name.length > 2 ? 'text-sm tracking-tighter' : 'text-xl'
+                      }`}>
                         {selected.name}
                       </div>
                       <div>
                         <div className="flex items-center gap-3">
                           <h3 className="text-2xl font-semibold text-slate-50">{selected.name}</h3>
-                          <div className="flex gap-0.5">
-                            {Array.from({ length: selected.starRating }).map((_, i) => (
+                          <div className="flex gap-0.5 items-center">
+                            {Array.from({ length: Math.floor(selected.starRating) }).map((_, i) => (
                               <Star key={i} className="w-4 h-4 text-amber-400 fill-amber-400" />
                             ))}
+                            {selected.starRating % 1 !== 0 && (
+                              <div className="relative w-4 h-4 flex-shrink-0">
+                                <Star className="absolute top-0 left-0 w-4 h-4 text-slate-700 fill-slate-700" />
+                                <div className="absolute top-0 left-0 w-2 h-4 overflow-hidden">
+                                  <Star className="w-4 h-4 text-amber-400 fill-amber-400 max-w-none" />
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                         <p className="text-xs text-slate-400 mt-1 font-mono uppercase tracking-wider">

@@ -8,9 +8,16 @@ import { TALENTS } from '../data';
 import { Sparkles, Info, Check, Filter, AlertCircle, RefreshCw, Layers } from 'lucide-react';
 
 export default function TalentGrid() {
-  const [pointLimit, setPointLimit] = useState<number>(30); // max 30 points based on rules
+  const [pointLimit, setPointLimit] = useState<number>(35); // max 35 points based on rules
   const [selectedTalents, setSelectedTalents] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>('all');
+
+  // Define restricted groups for mutual exclusion
+  const groups = useMemo(() => ({
+    adaptability: ["箭無虛發", "鞍馬嫻熟", "固若金湯", "槍出如龍"],
+    faction: ["魏武之志", "蜀漢棟梁", "東吳賢良", "亂世英雄"],
+    tags: ["黃巾信徒", "南中勇士"]
+  }), []);
 
   // Compute total cost
   const totalCost = useMemo(() => {
@@ -20,15 +27,26 @@ export default function TalentGrid() {
     }, 0);
   }, [selectedTalents]);
 
-  // Handle selection toggles
+  // Handle selection toggles with mutual exclusion constraints
   const handleToggleTalent = (name: string, cost: number) => {
     if (selectedTalents.includes(name)) {
       setSelectedTalents(selectedTalents.filter(item => item !== name));
     } else {
-      if (totalCost + cost > pointLimit) {
-        // We'll let them select but warning is shown below, or we can enforce
+      let updated = [...selectedTalents];
+      
+      // Enforce the rule constraints
+      if (groups.adaptability.includes(name)) {
+        // Deselect any other active army adaptability
+        updated = updated.filter(item => !groups.adaptability.includes(item));
+      } else if (groups.faction.includes(name)) {
+        // Deselect any other active faction
+        updated = updated.filter(item => !groups.faction.includes(item));
+      } else if (groups.tags.includes(name)) {
+        // Deselect any other active tag
+        updated = updated.filter(item => !groups.tags.includes(item));
       }
-      setSelectedTalents([...selectedTalents, name]);
+
+      setSelectedTalents([...updated, name]);
     }
   };
 
@@ -43,12 +61,20 @@ export default function TalentGrid() {
       // Deduce category
       let category = 'other';
       let categoryName = '屬性與戰術';
-      if (['箭無虛發', '鞍馬嫻熟', '固若金湯', '槍出如龍'].includes(t.name)) {
+      let restriction = '';
+      
+      if (groups.adaptability.includes(t.name)) {
         category = 'adaptability';
         categoryName = '兵種適性 S';
-      } else if (['魏武之志', '蜀漢棟梁', '東吳賢良', '亂世英雄', '黃巾信徒', '南中勇士'].includes(t.name)) {
+        restriction = '四選一';
+      } else if (groups.faction.includes(t.name)) {
         category = 'faction';
-        categoryName = '加入陣營/標籤';
+        categoryName = '加入陣營';
+        restriction = '四選一';
+      } else if (groups.tags.includes(t.name)) {
+        category = 'faction';
+        categoryName = '加入標籤';
+        restriction = '二選一';
       } else if (['身經百戰', '天賦昇稟', '融會貫通', '軍令如山', '生生不息'].includes(t.name)) {
         category = 'stats';
         categoryName = '基礎屬性特技';
@@ -59,9 +85,9 @@ export default function TalentGrid() {
         category = 'tactics';
         categoryName = '配套專屬戰法';
       }
-      return { ...t, category, categoryName };
+      return { ...t, category, categoryName, restriction };
     });
-  }, []);
+  }, [groups]);
 
   // Filter based on active category
   const filteredTalents = useMemo(() => {
@@ -82,7 +108,7 @@ export default function TalentGrid() {
             都尉天賦樹 & 點數計算器
           </h3>
           <p className="text-xs text-slate-400">
-            初級都尉擁有 <strong>10點</strong> 初始天賦力，隨著官職晉升，最高可獲取 <strong>30點</strong> 天賦點上限。
+            初級都尉擁有 <strong>10點</strong> 初始天賦力，隨著官職晉升，最高可獲取 <strong>35點</strong> 天賦點上限。
           </p>
         </div>
 
@@ -91,7 +117,7 @@ export default function TalentGrid() {
           <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-800 flex items-center gap-3">
             <span className="text-xs text-slate-400 font-mono">設定點數上限:</span>
             <div className="flex gap-1.5">
-              {[10, 20, 30].map((val) => (
+              {[10, 20, 30, 35].map((val) => (
                 <button
                   key={val}
                   id={`btn-point-cap-${val}`}
@@ -170,6 +196,31 @@ export default function TalentGrid() {
           ))}
         </div>
 
+        {/* Rule Restriction Info Banner */}
+        <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-3 px-4 text-xs text-slate-300 flex items-start gap-2.5">
+          <AlertCircle className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
+          <div className="space-y-1">
+            <div className="font-semibold text-slate-100 flex items-center gap-1.5">
+              <span>配置規則限制：</span>
+              <span className="text-[10px] text-slate-500 font-normal">（點擊同類型相衝突天賦時，將自動為您進行互斥替換）</span>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 text-[11px] text-slate-400">
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <strong>兵種適性 S</strong> 類（如箭無虛發、固若金湯等）：<span className="text-amber-400 font-semibold">四選一</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <strong>加入陣營</strong> 類（如魏武之志、蜀漢棟梁等）：<span className="text-amber-400 font-semibold">四選一</span>
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                <strong>增加特殊標籤</strong> 類（黃巾信徒、南中勇士）：<span className="text-amber-400 font-semibold">二選一</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* The Grid of Talents */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4" id="talents-grid-container">
           {filteredTalents.map((t) => {
@@ -187,8 +238,13 @@ export default function TalentGrid() {
               >
                 <div>
                   <div className="flex justify-between items-start gap-2 mb-2">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500">
+                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500 flex items-center gap-1.5">
                       {t.categoryName}
+                      {t.restriction && (
+                        <span className="bg-amber-500/10 text-amber-300 border border-amber-500/20 px-1 py-0.2 rounded text-[9px] font-semibold scale-90 origin-left">
+                          {t.restriction}
+                        </span>
+                      )}
                     </span>
                     
                     <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-bold ${

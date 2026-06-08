@@ -82,7 +82,7 @@ export default function App() {
             { id: 'talent', label: '天賦配置計算器', icon: Workflow },
             { id: 'tier', label: '強勢天梯陣容', icon: Award },
             { id: 'civil', label: '政廳文臣提案', icon: ScrollText },
-            { id: 'weather', label: '沙盤氣象與武將', icon: Compass },
+            { id: 'weather', label: '沙盤氣象、武將及精。拓戰法', icon: Compass },
             { id: 'starter', label: '48H 起兵開荒', icon: ShieldCheck }
           ].map((tab) => {
             const IconComponent = tab.icon;
