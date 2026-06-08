@@ -5,7 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    base: '/zgc-hero/,
+    base: '/zgc-hero/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
